@@ -2,38 +2,29 @@ package com.uday.task4.model;
 
 import java.util.Date;
 
-import org.springframework.format.annotation.DateTimeFormat;
-
-public class InvoiceItem {
+public class Medicine {
     private Integer id;
-    private Integer quantity;
-    private String description;
+    private String name;
     private String packing;
     private Double gst;
     private Double tradePrice;
     private Double retailPrice;
     private Double discount;
-
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date expiryDate;
 
-    private Double netAmount;
-
-    public InvoiceItem() {
+    public Medicine() {
     }
 
-    public InvoiceItem(Integer id, Integer quantity, String description, String packing, Double gst, Double tradePrice,
-            Double retailPrice, Double discount, Date expiryDate, Double netAmount) {
+    public Medicine(Integer id, String name, String packing, Double gst, Double tradePrice, Double retailPrice,
+            Double discount, Date expiryDate) {
         this.id = id;
-        this.quantity = quantity;
-        this.description = description;
+        this.name = name;
         this.packing = packing;
         this.gst = gst;
         this.tradePrice = tradePrice;
         this.retailPrice = retailPrice;
         this.discount = discount;
         this.expiryDate = expiryDate;
-        this.netAmount = netAmount;
     }
 
     public Integer getId() {
@@ -44,20 +35,12 @@ public class InvoiceItem {
         this.id = id;
     }
 
-    public Integer getQuantity() {
-        return quantity;
+    public String getName() {
+        return name;
     }
 
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getPacking() {
@@ -108,25 +91,12 @@ public class InvoiceItem {
         this.expiryDate = expiryDate;
     }
 
-    public Double getNetAmount() {
-        return netAmount;
-    }
-
-    public void setNetAmount(Double netAmount) {
-        this.netAmount = netAmount;
-    }
-
     @Override
     public String toString() {
-        return "InvoiceItem [id=" + id + ", quantity=" + quantity + ", description=" + description + ", packing="
-                + packing + ", gst=" + gst + ", tradePrice=" + tradePrice + ", retailPrice=" + retailPrice
-                + ", discount=" + discount + ", expiryDate=" + expiryDate + ", netAmount=" + netAmount + "]";
+        return "Medicine [id=" + id + ", name=" + name + ", packing=" + packing + ", gst=" + gst + ", tradePrice="
+                + tradePrice + ", retailPrice=" + retailPrice + ", discount=" + discount + ", expiryDate=" + expiryDate
+                + "]";
     }
 
-    public void calculateNetAmount() {
-        double priceAfterDiscount = retailPrice - (retailPrice * discount / 100);
-        this.netAmount = priceAfterDiscount * quantity;
-    }
-
-    // Getters and Setters
+    // Getters, setters, constructors
 }

@@ -3,80 +3,72 @@
 <head>
     <title>Medical Shop E-Invoice</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <style>
-        body {
-            background-color: #f8f9fa;
-        }
-        .invoice-container {
-            max-width: 1200px;
-            margin: auto;
-        }
-        h2 {
-            margin-bottom: 30px;
-            color: #0d6efd;
-        }
+        body { background-color: #eef2f7; font-family: 'Segoe UI', Tahoma, sans-serif; }
+        .invoice-container { max-width: 1200px; margin: auto; }
+        h2 { margin-bottom: 10px; font-weight: bold; color: #0d6efd; }
+        .subtitle { color: #6c757d; margin-bottom: 30px; }
         .form-card {
-            padding: 20px;
-            border-radius: 10px;
-            background-color: #ffffff;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            margin-bottom: 40px;
+            padding: 25px; border-radius: 12px; background-color: #ffffff;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.08); margin-bottom: 40px;
         }
-        .table th {
-            background-color: #0d6efd;
-            color: white;
-            text-align: center;
+        .table th { background-color: #0d6efd; color: white; text-align: center; }
+        .table td { text-align: center; vertical-align: middle; }
+        .btn-success, .btn-danger, .btn-primary { border-radius: 8px; }
+        .totals-row th { background-color: #f1f5f9; color: #6c757d; }
+        .note {
+            margin-top: 15px; font-size: 13px; text-align: center;
+            color: #555; font-style: italic;
         }
-        .table td {
-            text-align: center;
-            vertical-align: middle;
+        .select2-container .select2-selection--single {
+            height: 38px; padding: 4px 8px;
         }
-        .btn-primary {
-            width: 100%;
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 30px;
         }
     </style>
 </head>
 <body class="p-4">
     <div class="invoice-container">
-        <h2 class="text-center">Medical Shop E-Invoice</h2>
+        <h2 class="text-center">Medical Invoice</h2>
+        <p class="subtitle text-center">Professional Billing System for Medical Stores</p>
 
+        <!-- Medicine Selection Form -->
         <div class="form-card">
-            <form th:action="@{/invoice/add}" th:object="${item}" method="post" class="row g-3">
-                <div class="col-md-2">
-                    <input type="number" th:field="*{quantity}" placeholder="Quantity" class="form-control" required>
+            <form th:action="@{/invoice/generate}" method="post" class="row g-3">
+                <div id="medicine-rows">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <select name="medicineId" class="form-select medicine-select" required>
+                                <option value="" disabled selected>Select Medicine</option>
+                                <option th:each="med : ${medicines}"
+                                        th:value="${med.id}"
+                                        th:text="${med.name}"></option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="number" name="quantity" placeholder="Quantity" class="form-control" min="1" required>
+                        </div>
+                        <div class="col-md-3 text-end">
+                            <button type="button" class="btn btn-outline-danger remove-row">Remove</button>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-md-3">
-                    <input type="text" th:field="*{description}" placeholder="Description" class="form-control" required>
-                </div>
-                <div class="col-md-2">
-                    <input type="text" th:field="*{packing}" placeholder="Packing" class="form-control">
-                </div>
-                <div class="col-md-1">
-                    <input type="number" step="0.01" th:field="*{gst}" placeholder="GST %" class="form-control">
-                </div>
-                <div class="col-md-2">
-                    <input type="number" step="0.01" th:field="*{tradePrice}" placeholder="Trade Price" class="form-control">
-                </div>
-                <div class="col-md-2">
-                    <input type="number" step="0.01" th:field="*{retailPrice}" placeholder="Retail Price" class="form-control">
-                </div>
-                <div class="col-md-2">
-                    <input type="number" step="0.01" th:field="*{discount}" placeholder="Discount %" class="form-control">
-                </div>
-                <div class="col-md-2">
-                    <input type="date" th:field="*{expiryDate}" class="form-control">
-                </div>
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-primary">Add Item</button>
+
+                <div class="col-12 d-flex justify-content-between">
+                    <button type="button" class="btn btn-success" id="addRow">+ Add Medicine</button>
+                    <button type="submit" class="btn btn-primary">Generate Invoice</button>
                 </div>
             </form>
         </div>
 
-        <div class="table-responsive">
-            <table class="table table-bordered table-hover align-middle">
+        <!-- Invoice Preview -->
+        <div th:if="${invoiceItems != null}" class="mt-4">
+            <h4>Invoice Preview</h4>
+            <table class="table table-bordered table-hover">
                 <thead>
                     <tr>
-                        <th>Qty</th>
                         <th>Description</th>
                         <th>Packing</th>
                         <th>GST %</th>
@@ -84,24 +76,79 @@
                         <th>Retail Price</th>
                         <th>Discount %</th>
                         <th>Expiry Date</th>
+                        <th>Quantity</th>
                         <th>Net Amount</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr th:each="item : ${items}">
-                        <td th:text="${item.quantity}"></td>
-                        <td th:text="${item.description}"></td>
-                        <td th:text="${item.packing}"></td>
-                        <td th:text="${item.gst}"></td>
-                        <td th:text="${item.tradePrice}"></td>
-                        <td th:text="${item.retailPrice}"></td>
-                        <td th:text="${item.discount}"></td>
-                        <td th:text="${#dates.format(item.expiryDate, 'yyyy-MM-dd')}"></td>
-                        <td th:text="${item.netAmount}"></td>
+                    <tr th:each="row : ${invoiceItems}">
+                        <td th:text="${row.description}"></td>
+                        <td th:text="${row.packing}"></td>
+                        <td th:text="${row.gst}"></td>
+                        <td th:text="${row.tradePrice}"></td>
+                        <td th:text="${row.retailPrice}"></td>
+                        <td th:text="${row.discount}"></td>
+                        <td th:text="${#dates.format(row.expiryDate, 'yyyy-MM-dd')}"></td>
+                        <td th:text="${row.quantity}"></td>
+                        <td th:text="${row.netAmount}"></td>
                     </tr>
                 </tbody>
+                <tfoot>
+                    <tr class="totals-row">
+                        <th colspan="8" class="text-end">Total Amount</th>
+                        <th th:text="${totalAmount}"></th>
+                    </tr>
+                    <tr class="totals-row">
+                        <th colspan="8" class="text-end">GST</th>
+                        <th th:text="${totalGst}"></th>
+                    </tr>
+                    <tr class="totals-row">
+                        <th colspan="8" class="text-end">Total Receivable</th>
+                        <th th:text="${totalReceivable}"></th>
+                    </tr>
+                </tfoot>
             </table>
+
         </div>
     </div>
+
+    <!-- JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        function applySelect2() {
+            $('.medicine-select').select2({
+                placeholder: "Search Medicine...",
+                allowClear: true,
+                width: '100%'
+            });
+        }
+        applySelect2();
+
+        document.getElementById('addRow').addEventListener('click', function () {
+            let container = document.getElementById('medicine-rows');
+            let row = container.children[0].cloneNode(true);
+            row.querySelectorAll('input').forEach(input => input.value = '');
+            row.querySelector('select').value = '';
+            container.appendChild(row);
+
+            // Reapply select2
+            $(row).find('.medicine-select').select2({
+                placeholder: "Search Medicine...",
+                allowClear: true,
+                width: '100%'
+            });
+
+            // Attach remove handler
+            row.querySelector('.remove-row').addEventListener('click', function () {
+                row.remove();
+            });
+        });
+
+        // Attach remove handler for first row
+        document.querySelector('.remove-row').addEventListener('click', function () {
+            this.closest('.row').remove();
+        });
+    </script>
 </body>
 </html>
