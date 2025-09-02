@@ -14,7 +14,6 @@ public class HomeAspect {
 
     @Pointcut("execution(* com.uday.task1.Task1Application.home(..))")
     public void homeMethod() {
-        // Pointcut for the home method
     }
 
     @Around("homeMethod()")

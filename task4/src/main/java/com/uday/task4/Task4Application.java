@@ -2,12 +2,20 @@ package com.uday.task4;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 
+@Controller
 @SpringBootApplication
 public class Task4Application {
 
 	public static void main(String[] args) {
 		SpringApplication.run(Task4Application.class, args);
+	}
+
+	@GetMapping("/")
+	public String home() {
+		return "home";
 	}
 
 }

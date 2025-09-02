@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title>Medicine Management - Home</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="container mt-5">
+    <h1 class="text-center mb-4">Medicine Management System</h1>
+
+    <div class="d-grid gap-3 col-6 mx-auto">
+      <a th:href="@{/medicines/add}" class="btn btn-primary btn-lg"
+        >Add Medicine</a
+      >
+      <a th:href="@{/medicines/list}" class="btn btn-success btn-lg"
+        >View Medicines</a
+      >
+      <a th:href="@{/invoice}" class="btn btn-info btn-lg">Generate Invoice</a>
+    </div>
+  </body>
+</html>

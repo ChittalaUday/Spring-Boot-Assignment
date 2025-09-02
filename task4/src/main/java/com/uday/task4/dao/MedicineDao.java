@@ -3,6 +3,9 @@ package com.uday.task4.dao;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import com.uday.task4.model.Medicine;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 @Repository
@@ -43,4 +46,18 @@ public class MedicineDao {
                     return med;
                 });
     }
+
+    public void save(Medicine medicine) {
+        String sql = "INSERT INTO medicine (name, packing, gst, trade_price, retail_price, discount, expiry_date) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        jdbcTemplate.update(sql,
+                medicine.getName(),
+                medicine.getPacking(),
+                medicine.getGst(),
+                medicine.getTradePrice(),
+                medicine.getRetailPrice(),
+                medicine.getDiscount(),
+                new java.sql.Date(medicine.getExpiryDate().getTime()));
+    }
+
 }
